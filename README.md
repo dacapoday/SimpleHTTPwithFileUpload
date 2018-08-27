@@ -1,4 +1,4 @@
-# Simple HTTP Server With Upload.
+# Simple HTTP Server With Upload Files.
 Modified from the standard library `http.server`. so only support Python3.
 
 Similar to the `http.server`, 
@@ -13,10 +13,10 @@ python3 ./server.py
 
 ---
 
-## 简易的http服务程序，支持上传和浏览文件
+## 简易的http服务程序，支持浏览和上传文件
 修改自 python 标准库 `http.server`，因此仅支持Python3。
 
-和 `http.server` 功能类似，但是增加了文件上传的功能。
+和 `http.server` 功能类似，但是增加了文件上传功能。
 
 只适合在局域网中，临时查看和传输文件。
 
