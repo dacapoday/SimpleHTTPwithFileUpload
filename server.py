@@ -172,6 +172,7 @@ class SimpleHTTPwithUploadRequestHandler(BaseHTTPRequestHandler):
         r.append('<title>%s</title>\n</head>' % title)
         r.append('<body>\n<h1>%s</h1>' % title)
         r.append('<hr>\n<strong>%s</strong>' % info)
+        r.append('<br><br>\n<a href="%s">back</a>' % self.headers['referer'])
         r.append('</body>\n</html>\n')
 
         encoded = '\n'.join(r).encode("utf-8", "surrogateescape")
