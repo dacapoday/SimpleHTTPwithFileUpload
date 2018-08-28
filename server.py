@@ -7,7 +7,7 @@ Added file upload function
 
 """
 
-__version__ = "0.1"
+__version__ = "0.2"
 __all__ = ["SimpleHTTPwithUploadRequestHandler"]
 __author__ = "dacapoday"
 
@@ -23,6 +23,12 @@ import sys
 import urllib.parse
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, HTTPServer
+import threading
+from socketserver import ThreadingMixIn
+
+
+class ThreadingSimpleServer(ThreadingMixIn, HTTPServer):
+    pass
 
 
 class SimpleHTTPwithUploadRequestHandler(BaseHTTPRequestHandler):
@@ -377,7 +383,7 @@ class SimpleHTTPwithUploadRequestHandler(BaseHTTPRequestHandler):
     })
 
 
-def test(HandlerClass, ServerClass=HTTPServer, protocol="HTTP/1.0", port=8000, bind=""):
+def test(HandlerClass, ServerClass, protocol="HTTP/1.0", port=8000, bind=""):
     """Test the HTTP request handler class.
 
     This runs an HTTP server on port 8000 (or the port argument).
@@ -391,7 +397,15 @@ def test(HandlerClass, ServerClass=HTTPServer, protocol="HTTP/1.0", port=8000, b
     serve_message = "Serving HTTP on {host} port {port} (http://{host}:{port}/) ..."
     print(serve_message.format(host=sa[0], port=sa[1]))
     try:
-        httpd.serve_forever()
+        while True:
+            server_thread = threading.Thread(target=httpd.serve_forever())
+            try:
+                server_thread.daemon = True
+                server_thread.start()
+                server_thread.join(timeout=180)
+            except:
+                print("Thread exiting.")
+            httpd.handle_request()
     except KeyboardInterrupt:
         print("\nKeyboard interrupt received, exiting.")
         sys.exit(0)
@@ -408,4 +422,6 @@ if __name__ == '__main__':
                         help='Specify alternate port [default: 8000]')
     args = parser.parse_args()
     handler_class = SimpleHTTPwithUploadRequestHandler
-    test(HandlerClass=handler_class, port=args.port, bind=args.bind)
+    server_class = ThreadingSimpleServer
+    test(HandlerClass=handler_class, ServerClass=server_class,
+         port=args.port, bind=args.bind)
